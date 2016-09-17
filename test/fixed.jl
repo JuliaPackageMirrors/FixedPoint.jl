@@ -84,9 +84,9 @@ for T in (Float16, Float32, Float64, BigFloat)
 end
 
 # Show
-x = Fixed{Int32,3}(0.25)
+x = Fixed{Int32,5}(0.25)
 iob = IOBuffer()
 show(iob, x)
 str = takebuf_string(iob)
-@test startswith(str, "Fixed{Int32,3}(")
+@test str == "0.25Q26f5"
 @test eval(parse(str)) == x

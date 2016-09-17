@@ -9,10 +9,23 @@ immutable Fixed{T <: Signed,f} <: FixedPoint{T,  f}
     Fixed(x) = convert(Fixed{T,f}, x)
 end
 
-typealias Fixed16 Fixed{Int32, 16}
-
   rawtype{T,f}(::Type{Fixed{T,f}}) = T
 nbitsfrac{T,f}(::Type{Fixed{T,f}}) = f
+typechar{X<:Fixed}(::Type{X}) = 'Q'
+signbits{X<:Fixed}(::Type{X}) = 1
+
+for T in (Int8, Int16, Int32, Int64)
+    for f in 0:sizeof(T)*8-1
+        sym = Symbol(takebuf_string(showtype(_iotypealias, Fixed{T,f})))
+        @eval begin
+            typealias $sym Fixed{$T,$f}
+            export $sym
+        end
+    end
+end
+
+# ASCII typealiases
+typealias Fixed16 Fixed{Int32,16}
 
 # basic operators
 -{T,f}(x::Fixed{T,f}) = Fixed{T,f}(-x.i,0)
